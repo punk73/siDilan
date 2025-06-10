@@ -7,6 +7,7 @@ from sort import *
 from states import saveToText, load
 import tkinter as tk
 from tkinter import simpledialog
+import test
 
 # root = tk.Tk()
 # root.withdraw()  # Hide main window
@@ -19,10 +20,14 @@ from tkinter import simpledialog
 # stream_url = 'https://s3klari.qumicon.info:8888/camFix-F3/stream.m3u8' #klari ke arah pintu toll kartim
 # stream_url = 'https://s3klari.qumicon.info:8888/camFix-F1/stream.m3u8' #klari arah karawang
 
-stream_url = input("input link cctv: (enter untuk menggunakan link default)")  # Example stream URL
+# I want to use gui on test.py to use as stream_url, how do i do that ?
+
+# stream_url = input("input link cctv: (enter untuk menggunakan link default)")  # Example stream URL
+
+stream_url = test.open_config_gui()
 
 if not stream_url:
-    stream_url = 'https://cctv.purwakartakab.go.id/cctv/rel-munjul.m3u8?v=4066696'
+    stream_url = 'https://s3klari.qumicon.info:8888/camFix-F3/stream.m3u8'
 
 # Open the video stream
 cap = cv2.VideoCapture(stream_url)
