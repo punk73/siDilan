@@ -3,6 +3,7 @@
 import customtkinter
 import json
 import os
+from states import load
 
 stream_url_result = None  # Global holder for result
 
@@ -18,18 +19,13 @@ def open_config_gui():
 
 
     # Named presets
-    url_presets = {
-        "Rel Munjul - Purwakarta": 'https://cctv.purwakartakab.go.id/cctv/rel-munjul.m3u8?v=4066696',
-        "Klari - Arah Cikampek": 'https://s3klari.qumicon.info:8888/camFix-F2/stream.m3u8',
-        "Klari - Arah Pintu Tol Karawang Timur": 'https://s3klari.qumicon.info:8888/camFix-F3/stream.m3u8',
-        "Klari - Arah Karawang": 'https://s3klari.qumicon.info:8888/camFix-F1/stream.m3u8',
-    }
+    url_presets = load('cctvs.json')
 
     customtkinter.set_appearance_mode('dark')
     customtkinter.set_default_color_theme('dark-blue')
 
     root = customtkinter.CTk()
-    root.geometry("400x180")
+    root.geometry("500x500")
     root.title("Enter Stream URL")
 
     frame = customtkinter.CTkFrame(master=root)
