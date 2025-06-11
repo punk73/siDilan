@@ -7,7 +7,7 @@ from sort import *
 from states import saveToText, load
 import tkinter as tk
 from tkinter import simpledialog
-import test
+import gui
 
 # root = tk.Tk()
 # root.withdraw()  # Hide main window
@@ -24,7 +24,7 @@ import test
 
 # stream_url = input("input link cctv: (enter untuk menggunakan link default)")  # Example stream URL
 
-stream_url = test.open_config_gui()
+stream_url = gui.open_config_gui()
 
 if not stream_url:
     stream_url = 'https://s3klari.qumicon.info:8888/camFix-F3/stream.m3u8'
