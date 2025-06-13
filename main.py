@@ -34,6 +34,7 @@ cap = cv2.VideoCapture(stream_url)
 
 if not cap.isOpened():
     print("Error: Could not open the video stream.")
+    tk.messagebox.showerror("Stream Error", "Could not open the video stream.")
     exit()
 
 # model = YOLO('yolov8n.pt')
