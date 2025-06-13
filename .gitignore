@@ -3,3 +3,7 @@
 end.json
 start.json
 __pycache__
+dist
+build
+__pycache__
+main.spec
