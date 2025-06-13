@@ -41,8 +41,8 @@ if not cap.isOpened():
 model = YOLO('yolo11n.pt')
 
 # Load mask
-mask = cv2.imread('mask_640x360_.png')
-
+# mask = cv2.imread('mask_640x360_.png')
+mask = None
 tracker = Sort(max_age=20, min_hits=2, iou_threshold=0.3)
 totalCount = 0
 ids = []
