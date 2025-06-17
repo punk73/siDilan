@@ -136,6 +136,7 @@ def main():
 
         # read content 
         config = setting.load_settings()
+        THICKNESS = int(config['thickness'])
 
         detections = np.empty((0,5))
         for r in results:
@@ -149,7 +150,6 @@ def main():
                     x1, y1, x2, y2 = box.xyxy[0]
                     x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
                     w, h = x2 - x1, y2 - y1
-                    # cvzone.cornerRect(img, (x1, y1, w, h), colorR=(0, 255, 0))
                     conf = math.ceil(box.conf[0] * 100)
                     cvzone.putTextRect(img, f'{class_name} {conf}%', (max(0, x1), max(35, y1)), scale=config['scale'], thickness=int(config['thickness']), offset=3)
                     currentArray = np.array([x1, y1, x2, y2, conf])
@@ -179,7 +179,7 @@ def main():
             x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
             w, h = x2 - x1, y2-y1
             id = int(id)
-            cvzone.cornerRect(img, (x1, y1, w, h), l=3, rt=3, colorR=(255,0,0))
+            cvzone.cornerRect(img, (x1, y1, w, h), l=3, rt=THICKNESS+2, colorR=(255,0,0))
             cvzone.putTextRect(img, f'{class_name} with id {id}', (max(0, x1), max(35, y1)), scale=config['scale'], thickness=int(config['thickness']), offset=10 )
 
             cx, cy = x1+w // 2, y1+h // 2
