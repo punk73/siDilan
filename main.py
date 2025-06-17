@@ -123,7 +123,7 @@ def main():
             resized_mask = cv2.resize(mask, (img.shape[1], img.shape[0]))
             masked = cv2.bitwise_and(img, resized_mask)
         else:
-            print("Error: Could not retrieve mask, skipping frame.")
+            # print("Error: Could not retrieve mask, skipping frame.")
             masked = img
 
         results = model(masked, stream=True)
