@@ -19,6 +19,16 @@ def send_message(message):
     return response.json()
 
 
+def send_photo(photo_path, caption=None):
+    url = f'https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendPhoto'
+    with open(photo_path, 'rb') as photo:
+        files = {'photo': photo}
+        data = {'chat_id': TELEGRAM_CHAT_ID}
+        if caption:
+            data['caption'] = caption
+        response = requests.post(url, files=files, data=data)
+    return response.json()
+
 # res = send_message('Hello world')
 # print(res)
 

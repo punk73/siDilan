@@ -8,7 +8,7 @@ from states import saveToText, load
 import tkinter as tk
 from tkinter import simpledialog
 import gui
-
+from bot import send_photo
 # root = tk.Tk()
 # root.withdraw()  # Hide main window
 # stream_url = simpledialog.askstring("Input", "Enter CCTV link (leave blank for default):")
@@ -180,7 +180,8 @@ while True:
                         # capture the screenshoot of img
                         screenshot_path = f'results/screenshot_{id}.jpg'  # Generate a unique filename based on the id
                         cv2.imwrite(screenshot_path, img)
-
+                        # Send it via Telegram
+                        send_photo(screenshot_path, caption=f"Detected event ID: {id}")
 
     # Display total count and tracked IDs
     # cvzone.putTextRect(img, f'total: {totalCount} with ids={", ".join(map(str, ids))}', (img.shape[1] - 500, 80), scale=2, thickness=1, offset=10)
