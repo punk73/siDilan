@@ -151,7 +151,8 @@ def main():
                     x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
                     w, h = x2 - x1, y2 - y1
                     conf = math.ceil(box.conf[0] * 100)
-                    cvzone.putTextRect(img, f'{class_name} {conf}%', (max(0, x1), max(35, y1)), scale=config['scale'], thickness=int(config['thickness']), offset=3)
+                    if config.get('show_object_name'):
+                        cvzone.putTextRect(img, f'{class_name} {conf}%', (max(0, x1), max(35, y1)), scale=config['scale'], thickness=int(config['thickness']), offset=3)
                     currentArray = np.array([x1, y1, x2, y2, conf])
                     detections = np.vstack((detections, currentArray))
 
@@ -179,8 +180,10 @@ def main():
             x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
             w, h = x2 - x1, y2-y1
             id = int(id)
-            cvzone.cornerRect(img, (x1, y1, w, h), l=3, rt=THICKNESS+2, colorR=(255,0,0))
-            cvzone.putTextRect(img, f'{class_name} with id {id}', (max(0, x1), max(35, y1)), scale=config['scale'], thickness=int(config['thickness']), offset=10 )
+            if config.get('show_tracker_box'):
+                cvzone.cornerRect(img, (x1, y1, w, h), l=3, rt=THICKNESS+2, colorR=(255,0,0))
+            if config.get('show_tracker_name'):
+                cvzone.putTextRect(img, f'{class_name} with id {id}', (max(0, x1), max(35, y1)), scale=config['scale'], thickness=int(config['thickness']), offset=10 )
 
             cx, cy = x1+w // 2, y1+h // 2
             currentPoint = (cx, cy)

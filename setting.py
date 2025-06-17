@@ -26,7 +26,9 @@ def open_gui_window():
         result = {
             "scale": float(scale_slider.get()),
             "thickness": float(thickness_slider.get()),
-            "offset": float(offset_slider.get())
+            "offset": float(offset_slider.get()),
+            "show_tracker_box": int(show_box_var.get()),
+            "show_tracker_name": int(show_name_var.get())
         }
         save_settings(result)
         app.destroy()
@@ -46,7 +48,17 @@ def open_gui_window():
     # offset_slider.set(float(config.get("offset", 3)))
     # offset_slider.pack()
 
-     # --- SCALE ---
+    # Show Tracker Box Checkbox
+    show_box_var = ctk.BooleanVar(value=bool(config.get("show_tracker_box", 0)))
+    show_box_checkbox = ctk.CTkCheckBox(app, text="Show Tracker Box", variable=show_box_var)
+    show_box_checkbox.pack(pady=5)
+
+    # Show Tracker Name Checkbox
+    show_name_var = ctk.BooleanVar(value=bool(config.get("show_tracker_name", 0)))
+    show_name_checkbox = ctk.CTkCheckBox(app, text="Show Tracker Name", variable=show_name_var)
+    show_name_checkbox.pack(pady=5)
+
+    # --- SCALE ---
     scale_label = ctk.CTkLabel(app, text="Scale (0.1 - 5)")
     scale_label.pack(pady=(20, 0))
     scale_value = ctk.CTkLabel(app, text="1.0")
