@@ -4,3 +4,4 @@ todo
 3. another setting like font size and position
 4. add icon program
 5. sent notification to telegram
+6. buat penyimpanan ke database
