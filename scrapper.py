@@ -35,13 +35,14 @@ try:
     links = grid.find_all("a", href=True) if grid else []
 
     print(f"Found {len(links)} links.")
-
+    temp = {}
     for a in links:
         title = a.get("title", "no-title").strip()
         href = a['href']
         full_link = href if href.startswith("http") else base_url.rstrip("/") + href
 
         print(f"\n🔗 Visiting: {full_link} | Title: {title}")
+        driver.requests.clear()
         driver.get(full_link)
 
         time.sleep(3)  # Wait for network requests to load
@@ -49,8 +50,9 @@ try:
         # Access captured requests
         m3u8_url = None
         for request in driver.requests:
-            if request.response and ".m3u8" in request.url:
+            if request.response and ".m3u8" in request.url and not temp.get(request.url) :
                 m3u8_url = request.url
+                temp[request.url] = 1
                 break
 
         if m3u8_url:
