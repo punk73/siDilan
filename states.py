@@ -13,15 +13,15 @@ def resource_path(relative_path):
     return os.path.join(os.path.abspath("."), relative_path)
 
 
-def load(file_path = "line_points.json"):
-    res = []
-
-    # Read line_points from a text file
-
-    # Check if the file exists before trying to load it
+def load(file_path="line_points.json"):
     full_path = resource_path(file_path)
     if os.path.exists(full_path):
-        with open(full_path, "r") as file:
-            res = json.load(file)
-
-    return res
+        try:
+            with open(full_path, "r") as file:
+                return json.load(file)
+        except json.JSONDecodeError as e:
+            print(f"Error decoding JSON from {file_path}: {e}")
+            return {}
+    else:
+        print(f"File not found: {full_path}")
+        return {}

@@ -1,7 +1,7 @@
 {
-    "scale": 1.0,
+    "scale": 0.39999999999999947,
     "thickness": 1.0,
     "offset": 1.0,
-    "show_tracker_box": 1,
+    "show_tracker_box": 0,
     "show_tracker_name": 1
 }

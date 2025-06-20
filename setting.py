@@ -2,12 +2,15 @@ import customtkinter as ctk
 import json
 import os
 from multiprocessing import Process
+import states
 
 config_path = "config.json"
 
+# load setting using states
 def load_settings():
-    with open(config_path) as f:
-        return json.load(f)
+    return states.load(config_path)
+    # with open(config_path) as f:
+    #     return json.load(f)
 
 def save_settings(updated_settings):
     current_config = load_settings()
