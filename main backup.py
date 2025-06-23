@@ -10,7 +10,7 @@ from tkinter import simpledialog
 import gui
 from bot import send_photo
 import setting
-from line_cross_detector import LineCrossDetector
+
 # global var
 # Line drawing variables
 line_points =  load("start.json")# Store the points of the line
@@ -66,13 +66,13 @@ def main():
     totalCount = 0
     ids = []
 
+    
+
     def draw_line(event, x, y, flags, param):
         global line_points
         global end
         global arrow
         global counter
-        global line_points, end, arrow, counter
-        global cross_detector_start, cross_detector_end
         
         # On left mouse button click, add point to line_points
         if event == cv2.EVENT_LBUTTONDOWN:
@@ -82,13 +82,11 @@ def main():
                 line_points.append((x, y))
                 if len(line_points) == 2:
                     saveToText(line_points=line_points, file_path="start.json")
-                    cross_detector_start = LineCrossDetector(line_points[0], line_points[1])
             
             elif 3 <= counter <= 4:
                 end.append((x, y))
                 if len(end) == 2:
                     saveToText(line_points=end, file_path="end.json")
-                    cross_detector_end = LineCrossDetector(end[0], end[1])
             
             if counter == 5:
                 # Reset after the fifth click
@@ -113,18 +111,8 @@ def main():
     cv2.setMouseCallback('Image', mouse_click)
     
 
-    # Setup before while loop
     
-    totalCount = 0
-    cross_detector_start = None
-    cross_detector_end = None
 
-    if len(line_points) == 2:
-        cross_detector_start = LineCrossDetector(line_points[0], line_points[1])
-
-    if len(end) == 2:
-        cross_detector_end = LineCrossDetector(end[0], end[1])
-    
     while True:
         success, img = cap.read()
         if not success:
@@ -170,21 +158,18 @@ def main():
 
         trackerResults = tracker.update(detections)
 
-        # draw the dot (red )
         for p in line_points:
-            cv2.circle(img, p, 5, (0,0,255), cv2.FILLED )
-        # draw the second line dot ( yellow )
+            cv2.circle(img, p, 10, (0,0,150), cv2.FILLED )
+        
         for ps in end:
             cv2.circle(img, ps, 5, (0, 255,255), cv2.FILLED )
 
         # Draw the line if two points are set
         if len(line_points) == 2:
-            cv2.line(img, line_points[0], line_points[1], (0, 0, 255), THICKNESS)
-            # cross_detector_start = LineCrossDetector(line_points[0], line_points[1])
+            cv2.line(img, line_points[0], line_points[1], (0, 0, 255), 3)
         
         if len(end) == 2:
-            cv2.line(img, end[0], end[1], (0, 255, 255), THICKNESS)
-            # cross_detector_end = LineCrossDetector(end[0], end[1])
+            cv2.line(img, end[0], end[1], (0, 255, 255), 3)
 
         # Track previous positions of each object by ID
         previous_positions = {}
@@ -202,30 +187,47 @@ def main():
 
             cx, cy = x1+w // 2, y1+h // 2
             currentPoint = (cx, cy)
-            current_point = currentPoint
-            cv2.circle(img, currentPoint, THICKNESS*2 , (255, 0, 0), cv2.FILLED)
+            point = cv2.circle(img, (cx, cy), 5, (255, 0, 0), cv2.FILLED)
 
-            # Start line crossing
-            if cross_detector_start and cross_detector_start.has_crossed(id, current_point):
-                ids.append(id)  # track who crossed start
-                print(f"Object {id} crossed the START line!")
+            # if point cross the line, count it
+            if len(line_points) == 2:
+                # current_side = is_above_line(currentPoint, line_points[0], line_points[1])
 
-            # End line crossing
-            if cross_detector_end and cross_detector_end.has_crossed(id, current_point):
-                if id in ids and id not in pelanggar:
-                    pelanggar.append(id)
-                    totalCount += 1
-                    print(f"Object {id} violated rules!")
-                    screenshot_path = f'results/screenshot_{id}.jpg'
-                    cv2.imwrite(screenshot_path, img)
-                    send_photo(screenshot_path, caption=f"Detected event ID: {id}")
+                # Check if we have a previous position for this object
+                    # If the signs of `current_side` and `previous_side` are different, the object has crossed the line
+                    # if current_side * previous_side < 0:
+                start1 = line_points[0]
+                start2 = line_points[1]
+                if start1[0] < cx < start2[0] and start1[1] - 20 < cy < start2[1] + 20:
+                    if ids.count(id) == 0:
+                        # totalCount += 1  # Increment the counter
+                        ids.append(id)
+                        # capture the screenshoot of img
+                        # screenshot_path = f'results/screenshot_{id}.jpg'  # Generate a unique filename based on the id
+                        # cv2.imwrite(screenshot_path, img)
+
+            if len(end) == 2:
+                # disini cek apa cross yang end
+                start1 = end[0]
+                start2 = end[1]
+                if start1[0] < cx < start2[0] and start1[1] - 20 < cy < start2[1] + 20:
+                    # check id ini udah ada yg input sebelumnya, yaitu start
+                    if ids.count(id) > 0:
+                        if pelanggar.count(id) == 0:
+                            totalCount += 1  # Increment the counter
+                            pelanggar.append(id)
+                            # ids.append(id)
+                            # capture the screenshoot of img
+                            screenshot_path = f'results/screenshot_{id}.jpg'  # Generate a unique filename based on the id
+                            cv2.imwrite(screenshot_path, img)
+                            # Send it via Telegram
+                            send_photo(screenshot_path, caption=f"Detected event ID: {id}")
 
         # Display total count and tracked IDs
         # cvzone.putTextRect(img, f'total: {totalCount} with ids={", ".join(map(str, ids))}', (img.shape[1] - 500, 80), scale=2, thickness=int(config['thickness']), offset=10)
         # cvzone.putTextRect(img, f'Counter: {counter} Start: {str(line_points)} & End: {str(end)}' , ( 10 , 40) , scale=3, thickness=2, offset=15 )
         # cvzone.putTextRect(img, f'total: {totalCount} with ids={", ".join(map(str, ids))}', (30, 80), scale=2, thickness=int(config['thickness']), offset=10)
-        if config.get('show_total_pelanggar'):
-            cvzone.putTextRect(img, f'total: {totalCount} with pelanggar={", ".join(map(str, pelanggar))}', (30, 120), scale=config['scale'], thickness=int(config['thickness']), offset=10)
+        cvzone.putTextRect(img, f'total: {totalCount} with pelanggar={", ".join(map(str, pelanggar))}', (30, 120), scale=config['scale'], thickness=int(config['thickness']), offset=10)
         # cvzone.putTextRect(img, f'prev position: {str(previous_positions)}' , ( 10 , 90) , scale=3, thickness=2, offset=15 )
         # Show the result
         cv2.imshow('Image', img)

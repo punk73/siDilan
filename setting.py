@@ -28,7 +28,9 @@ def open_gui_window():
             "thickness": float(thickness_slider.get()),
             "offset": float(offset_slider.get()),
             "show_tracker_box": int(show_box_var.get()),
-            "show_tracker_name": int(show_name_var.get())
+            "show_tracker_name": int(show_name_var.get()),
+            "show_total_pelanggar": int(show_total_pelanggar_var.get()),
+            "show_object_name": int(show_object_name.get()),
         }
         save_settings(result)
         app.destroy()
@@ -57,6 +59,16 @@ def open_gui_window():
     show_name_var = ctk.BooleanVar(value=bool(config.get("show_tracker_name", 0)))
     show_name_checkbox = ctk.CTkCheckBox(app, text="Show Tracker Name", variable=show_name_var)
     show_name_checkbox.pack(pady=5)
+    
+    # Show Tracker Name Checkbox
+    show_total_pelanggar_var = ctk.BooleanVar(value=bool(config.get("show_total_pelanggar", 0)))
+    show_total_pelanggar_checkbox = ctk.CTkCheckBox(app, text="Show Total Pelanggar", variable=show_total_pelanggar_var)
+    show_total_pelanggar_checkbox.pack(pady=5)
+    
+    # Show Tracker Name Checkbox
+    show_object_name = ctk.BooleanVar(value=bool(config.get("show_object_name", 0)))
+    show_object_name_checkbox = ctk.CTkCheckBox(app, text="Show Nama Object", variable=show_object_name)
+    show_object_name_checkbox.pack(pady=5)
 
     # --- SCALE ---
     scale_label = ctk.CTkLabel(app, text="Scale (0.1 - 5)")

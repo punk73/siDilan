@@ -3,5 +3,8 @@
     "thickness": 1.0,
     "offset": 1.0,
     "show_tracker_box": 0,
-    "show_tracker_name": 1
+    "show_tracker_name": 1,
+    "show_result": 1,
+    "show_total_pelanggar": 0,
+    "show_object_name": 1
 }

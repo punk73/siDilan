@@ -3,5 +3,5 @@ todo
 2. ship it in windows ( done )
 3. another setting like font size and position --> todo
 4. add icon program
-5. sent notification to telegram
-6. buat penyimpanan ke database
+5. sent notification to telegram -> done
+6. buat penyimpanan ke database 
