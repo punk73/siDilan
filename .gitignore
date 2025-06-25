@@ -9,3 +9,4 @@ __pycache__
 main.spec
 .env
 chromedriver-mac-arm64
+test_video/

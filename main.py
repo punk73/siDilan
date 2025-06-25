@@ -11,17 +11,19 @@ import gui
 from bot import send_photo
 import setting
 from line_cross_detector import LineCrossDetector
+import model
 # global var
 # Line drawing variables
 line_points =  load("start.json")# Store the points of the line
 end =  load("end.json")# Store the points of the line
-arrow = load("arrow.json")
+# arrow = load("arrow.json")
 counter = len(line_points) + len(end)
 ids = []
 pelanggar = []
 cross_detector_end = None
 cross_detector_start = None
 
+model.init_db()
 # root = tk.Tk()
 # root.withdraw()  # Hide main window
 # stream_url = simpledialog.askstring("Input", "Enter CCTV link (leave blank for default):")
@@ -31,7 +33,7 @@ cross_detector_start = None
 
 # stream_url = 'https://s3klari.qumicon.info:8888/camFix-F2/stream.m3u8' #klari arah cikampek
 # stream_url = 'https://s3klari.qumicon.info:8888/camFix-F3/stream.m3u8' #klari ke arah pintu toll kartim
-# stream_url = 'https://s3klari.qumicon.info:8888/camFix-F1/stream.m3u8' #klari arah karawang
+# stream_url = 'https://s3klari.qumicon.info:8888/camFix-F1/stream.m3u8' #klari arah karawang ./test_video/test.MOV
 
 # I want to use gui on test.py to use as stream_url, how do i do that ?
 
@@ -237,7 +239,7 @@ def main():
                     print(f"Object {id} violated rules!")
                     screenshot_path = f'results/screenshot_{id}.jpg'
                     cv2.imwrite(screenshot_path, img)
-                    send_photo(screenshot_path, caption=f"Detected event ID: {id}")
+                    send_photo(screenshot_path, caption=f"Telah terjadi pelanggaran di {stream_url} dengan id: {id}", cctv=stream_url, object_id=id)
 
         # Display total count and tracked IDs
         # cvzone.putTextRect(img, f'total: {totalCount} with ids={", ".join(map(str, ids))}', (img.shape[1] - 500, 80), scale=2, thickness=int(config['thickness']), offset=10)
