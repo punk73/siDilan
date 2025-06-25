@@ -19,6 +19,8 @@ arrow = load("arrow.json")
 counter = len(line_points) + len(end)
 ids = []
 pelanggar = []
+cross_detector_end = None
+cross_detector_start = None
 
 # root = tk.Tk()
 # root.withdraw()  # Hide main window
@@ -40,6 +42,7 @@ pelanggar = []
         
 def main():
     global button_rect
+    global cross_detector_start, cross_detector_end
     button_rect = (0, 0, 0, 0)  # initialized early to avoid NameError
     # Define mouse callback function
     
@@ -75,26 +78,33 @@ def main():
         global cross_detector_start, cross_detector_end
         
         # On left mouse button click, add point to line_points
-        if event == cv2.EVENT_LBUTTONDOWN:
-            counter+=1
+        if event == cv2.EVENT_LBUTTONDOWN:            
+            counter += 1
 
             if counter <= 2:
                 line_points.append((x, y))
-                if len(line_points) == 2:
-                    saveToText(line_points=line_points, file_path="start.json")
-                    cross_detector_start = LineCrossDetector(line_points[0], line_points[1])
-            
             elif 3 <= counter <= 4:
                 end.append((x, y))
-                if len(end) == 2:
-                    saveToText(line_points=end, file_path="end.json")
-                    cross_detector_end = LineCrossDetector(end[0], end[1])
-            
-            if counter == 5:
-                # Reset after the fifth click
+            elif counter == 5:
+                # Reset everything
                 line_points = []
                 end = []
                 counter = 0
+                cross_detector_start = None
+                cross_detector_end = None
+                print("🧹 Lines cleared.")
+                return
+
+            # ✅ Always check and create detectors if two points are available
+            if len(line_points) == 2:
+                saveToText(line_points=line_points, file_path="start.json")
+                cross_detector_start = LineCrossDetector(line_points[0], line_points[1], buffer=15)
+                print("✅ cross_detector_start updated")
+
+            if len(end) == 2:
+                saveToText(line_points=end, file_path="end.json")
+                cross_detector_end = LineCrossDetector(end[0], end[1], buffer=15)
+                print("✅ cross_detector_end updated")
 
 
     def mouse_click(event, x, y, flags, param):
@@ -116,14 +126,14 @@ def main():
     # Setup before while loop
     
     totalCount = 0
-    cross_detector_start = None
-    cross_detector_end = None
+    # cross_detector_start = None
+    # cross_detector_end = None
 
     if len(line_points) == 2:
-        cross_detector_start = LineCrossDetector(line_points[0], line_points[1])
+        cross_detector_start = LineCrossDetector(line_points[0], line_points[1], buffer=15)
 
     if len(end) == 2:
-        cross_detector_end = LineCrossDetector(end[0], end[1])
+        cross_detector_end = LineCrossDetector(end[0], end[1], buffer=15)
     
     while True:
         success, img = cap.read()
@@ -178,17 +188,26 @@ def main():
             cv2.circle(img, ps, 5, (0, 255,255), cv2.FILLED )
 
         # Draw the line if two points are set
-        if len(line_points) == 2:
-            cv2.line(img, line_points[0], line_points[1], (0, 0, 255), THICKNESS)
-            # cross_detector_start = LineCrossDetector(line_points[0], line_points[1])
+        # if len(line_points) == 2:
+        #     # cv2.line(img, line_points[0], line_points[1], (0, 0, 255), THICKNESS)
+        #     # cross_detector_start = LineCrossDetector(line_points[0], line_points[1])
+        #     cross_detector_start.draw_line(img, THICKNESS=THICKNESS)
         
-        if len(end) == 2:
-            cv2.line(img, end[0], end[1], (0, 255, 255), THICKNESS)
-            # cross_detector_end = LineCrossDetector(end[0], end[1])
+        # if len(end) == 2:
+        #     # cv2.line(img, end[0], end[1], (0, 255, 255), THICKNESS)
+        #     # cross_detector_end = LineCrossDetector(end[0], end[1])
+        #     cross_detector_end.draw_line(img, THICKNESS=THICKNESS)
 
-        # Track previous positions of each object by ID
-        previous_positions = {}
+        # if counter == 4:
+        #     cross_detector_start.draw_detection_zone(img)
+        #     cross_detector_end.draw_detection_zone(img)
         
+        if cross_detector_start:
+            cross_detector_start.draw_detection_zone(img)
+            cross_detector_start.draw_line(img)
+        if cross_detector_end:
+            cross_detector_end.draw_detection_zone(img)
+            cross_detector_end.draw_line(img)
 
         for t in trackerResults:
             x1, y1, x2, y2, id = t
@@ -227,6 +246,9 @@ def main():
         if config.get('show_total_pelanggar'):
             cvzone.putTextRect(img, f'total: {totalCount} with pelanggar={", ".join(map(str, pelanggar))}', (30, 120), scale=config['scale'], thickness=int(config['thickness']), offset=10)
         # cvzone.putTextRect(img, f'prev position: {str(previous_positions)}' , ( 10 , 90) , scale=3, thickness=2, offset=15 )
+        
+        cvzone.putTextRect(img, f'line_point: {line_points} end {end} ', (30, 120), scale=config['scale'], thickness=int(config['thickness']), offset=10)
+        
         # Show the result
         cv2.imshow('Image', img)
 
