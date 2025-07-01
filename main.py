@@ -169,8 +169,12 @@ def main():
                 cls = int(box.cls[0])
                 class_name = model.names[cls]
 
-                if True:
-                # if class_name == 'car' or class_name == 'motorcycle':
+                # if True:
+                known_object = [
+                    'car', 'motorcycle', 'bus', 'truck'
+                ];
+
+                if class_name in known_object:
                     x1, y1, x2, y2 = box.xyxy[0]
                     x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
                     w, h = x2 - x1, y2 - y1
@@ -249,7 +253,8 @@ def main():
             cvzone.putTextRect(img, f'total: {totalCount} with pelanggar={", ".join(map(str, pelanggar))}', (30, 120), scale=config['scale'], thickness=int(config['thickness']), offset=10)
         # cvzone.putTextRect(img, f'prev position: {str(previous_positions)}' , ( 10 , 90) , scale=3, thickness=2, offset=15 )
         
-        cvzone.putTextRect(img, f'line_point: {line_points} end {end} ', (30, 120), scale=config['scale'], thickness=int(config['thickness']), offset=10)
+        # ini mah buat debuging doang
+        # cvzone.putTextRect(img, f'line_point: {line_points} end {end} ', (30, 120), scale=config['scale'], thickness=int(config['thickness']), offset=10)
         
         # Show the result
         cv2.imshow('Image', img)
