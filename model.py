@@ -38,3 +38,11 @@ def export_to_csv(db_path="sidilan.db", out_path="violations.csv"):
     df = pd.read_sql_query("SELECT * FROM violations", conn)
     df.to_csv(out_path, index=False)
     conn.close()
+
+def get_last_object_id(db_path="sidilan.db"):
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+    c.execute("SELECT MAX(object_id) FROM violations")
+    result = c.fetchone()
+    conn.close()
+    return result[0] if result[0] is not None else 0

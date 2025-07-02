@@ -24,6 +24,7 @@ cross_detector_end = None
 cross_detector_start = None
 
 model.init_db()
+latest_id = model.get_last_object_id()
 # root = tk.Tk()
 # root.withdraw()  # Hide main window
 # stream_url = simpledialog.askstring("Input", "Enter CCTV link (leave blank for default):")
@@ -163,6 +164,7 @@ def main():
         THICKNESS = int(config['thickness'])
 
         detections = np.empty((0,5))
+        detection_classes = []
         for r in results:
             boxes = r.boxes
             for box in boxes:
@@ -183,6 +185,7 @@ def main():
                         cvzone.putTextRect(img, f'{class_name} {conf}%', (max(0, x1), max(35, y1)), scale=config['scale'], thickness=int(config['thickness']), offset=3)
                     currentArray = np.array([x1, y1, x2, y2, conf])
                     detections = np.vstack((detections, currentArray))
+                    detection_classes.append(class_name)  # 💡 Save the class
 
         trackerResults = tracker.update(detections)
 
@@ -215,11 +218,18 @@ def main():
             cross_detector_end.draw_detection_zone(img)
             cross_detector_end.draw_line(img)
 
-        for t in trackerResults:
+        for idx,t in enumerate(trackerResults):
             x1, y1, x2, y2, id = t
             x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
             w, h = x2 - x1, y2-y1
-            id = int(id)
+            id = int(id) + int(latest_id)
+
+            # Match class name based on detection index
+            if idx < len(detection_classes):
+                class_name = detection_classes[idx]
+            else:
+                class_name = "unknown"
+
             if config.get('show_tracker_box'):
                 cvzone.cornerRect(img, (x1, y1, w, h), l=3, rt=THICKNESS+2, colorR=(255,0,0))
             if config.get('show_tracker_name'):
