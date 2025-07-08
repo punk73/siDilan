@@ -49,7 +49,7 @@ def main():
     button_rect = (0, 0, 0, 0)  # initialized early to avoid NameError
     # Define mouse callback function
     
-    stream_url = gui.open_config_gui()
+    stream_url, model_name = gui.open_config_gui()
 
     if not stream_url:
         stream_url = 'https://s3klari.qumicon.info:8888/camFix-F3/stream.m3u8'
@@ -62,8 +62,9 @@ def main():
         tk.messagebox.showerror("Stream Error", "Could not open the video stream.")
         exit()
 
-    # model = YOLO('yolov8n.pt')
-    model = YOLO('yolo11n.pt')
+    # model = YOLO('yolov8n.pt') // ini bs diubah-ubah, n = nano, s=small, m=medium, l=large, x=xtra large
+    
+    model = YOLO(f"{model_name}.pt")  # ex: yolo11n.pt, yolo11x.pt, etc.
 
     # Load mask
     # mask = cv2.imread('mask_640x360_.png')
