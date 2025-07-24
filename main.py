@@ -12,6 +12,7 @@ from bot import send_photo
 import setting
 from line_cross_detector import LineCrossDetector
 import model
+import _meta
 # global var
 # Line drawing variables
 line_points =  load("start.json")# Store the points of the line
@@ -54,6 +55,7 @@ def main():
     if not stream_url:
         stream_url = 'https://s3klari.qumicon.info:8888/camFix-F3/stream.m3u8'
 
+    should_rotate = _meta.should_rotate_by_resolution(stream_url)
     # Open the video stream
     cap = cv2.VideoCapture(stream_url)
 
@@ -145,14 +147,20 @@ def main():
             break
 
         # Apply the mask if available
-        if mask is not None:
-            resized_mask = cv2.resize(mask, (img.shape[1], img.shape[0]))
-            masked = cv2.bitwise_and(img, resized_mask)
-        else:
-            # print("Error: Could not retrieve mask, skipping frame.")
-            masked = img
+        # no longer using mask, but you can uncomment this if you want to use mask
+        # if mask is not None:
+        #     resized_mask = cv2.resize(mask, (img.shape[1], img.shape[0]))
+        #     masked = cv2.bitwise_and(img, resized_mask)
+        # else:
+        #     # print("Error: Could not retrieve mask, skipping frame.")
+        #     # img = cv2.resize(img, (, 360))  # Resize to a default size if no mask
+        #     masked = img
 
-        results = model(masked, stream=True)
+        # Rotate only if portrait (90 or 270 degrees)
+        if should_rotate:
+            img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+
+        results = model(img, stream=True)
         button_rect = (img.shape[1] - 150, 10, 140, 40)  # (x, y, width, height)
 
         # Draw settings button (top-right corner)
@@ -173,20 +181,20 @@ def main():
                 class_name = model.names[cls]
 
                 # if True:
-                known_object = [
-                    'car', 'motorcycle', 'bus', 'truck'
-                ];
+                # known_object = [
+                #     'car', 'motorcycle', 'bus', 'truck', 'license_plate'
+                # ];
 
-                if class_name in known_object:
-                    x1, y1, x2, y2 = box.xyxy[0]
-                    x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
-                    w, h = x2 - x1, y2 - y1
-                    conf = math.ceil(box.conf[0] * 100)
-                    if config.get('show_object_name'):
-                        cvzone.putTextRect(img, f'{class_name} {conf}%', (max(0, x1), max(35, y1)), scale=config['scale'], thickness=int(config['thickness']), offset=3)
-                    currentArray = np.array([x1, y1, x2, y2, conf])
-                    detections = np.vstack((detections, currentArray))
-                    detection_classes.append(class_name)  # 💡 Save the class
+                # if class_name in known_object:
+                x1, y1, x2, y2 = box.xyxy[0]
+                x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
+                w, h = x2 - x1, y2 - y1
+                conf = math.ceil(box.conf[0] * 100)
+                if config.get('show_object_name'):
+                    cvzone.putTextRect(img, f'{class_name} {conf}%', (max(0, x1), max(35, y1)), scale=config['scale'], thickness=int(config['thickness']), offset=3)
+                currentArray = np.array([x1, y1, x2, y2, conf])
+                detections = np.vstack((detections, currentArray))
+                detection_classes.append(class_name)  # 💡 Save the class
 
         trackerResults = tracker.update(detections)
 

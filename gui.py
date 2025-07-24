@@ -53,7 +53,7 @@ def open_config_gui():
 
     model_selector = customtkinter.CTkOptionMenu(
         master=frame,
-        values=["yolo11n", "yolo11s", "yolo11m", "yolo11l", "yolo11x"]
+        values=["yolo11n", "yolo11s", "yolo11m", "yolo11l", "yolo11x", "plates"]
     )
     model_selector.pack(pady=5)
     model_selector.set("yolo11n")  # Default

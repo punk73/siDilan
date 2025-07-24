@@ -8,3 +8,7 @@ todo
 7. lanjut id based on databse -> done
 8. gimana caranya meningkatkan akurasi deteksi
 9. perbaiki class_name error -> done
+
+./test_video/test.MOV
+./test_video/pm1.MOV
+./test_video/pm2.MOV
