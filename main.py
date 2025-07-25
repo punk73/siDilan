@@ -48,6 +48,7 @@ def main():
     global cross_detector_start, cross_detector_end
     button_rect = (0, 0, 0, 0)  # initialized early to avoid NameError
     # Define mouse callback function
+    global pelanggar, ids
     
     stream_url, model_name = gui.open_config_gui()
 
@@ -142,6 +143,7 @@ def main():
     while True:
         success, img = cap.read()
         if not success:
+            print("[Stream] Failed to read frame. Reconnecting...")
             break
 
         # Apply the mask if available
@@ -266,7 +268,10 @@ def main():
         
         # ini mah buat debuging doang
         # cvzone.putTextRect(img, f'line_point: {line_points} end {end} ', (30, 120), scale=config['scale'], thickness=int(config['thickness']), offset=10)
-        
+        if len(ids) > 1000:
+            ids = []
+        if len(pelanggar) > 1000:
+            pelanggar = []
         # Show the result
         cv2.imshow('Image', img)
 
@@ -276,6 +281,7 @@ def main():
 
     cap.release()
     cv2.destroyAllWindows()
+    print("Exiting...")
 
 if __name__ == "__main__":
     main()
