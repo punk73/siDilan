@@ -8,10 +8,12 @@ from states import saveToText, load
 import tkinter as tk
 from tkinter import simpledialog
 import gui
-from bot import send_photo
+from bot import send_photo, send_message
 import setting
 from line_cross_detector import LineCrossDetector
 import model
+from datetime import datetime
+import time
 # global var
 # Line drawing variables
 line_points =  load("start.json")# Store the points of the line
@@ -142,9 +144,27 @@ def main():
     
     while True:
         success, img = cap.read()
+        print(f"Frame shape: {img.shape}")
+        
         if not success:
-            print("[Stream] Failed to read frame. Reconnecting...")
-            break
+            print(f"[{datetime.now()}] Frame read failed. Trying to reconnect...")
+            timesleep = 2 # milliseconds =  2 second
+            for attempt in range(5):
+                cap.release()
+                time.sleep(timesleep)  # Give time before trying again
+                cap = cv2.VideoCapture(stream_url)
+
+                if cap.isOpened():
+                    print(f"[{datetime.now()}] Reconnected successfully on attempt {attempt + 1}")
+                    break
+                else:
+                    print(f"[{datetime.now()}] Reconnection attempt {attempt + 1} failed...")
+                    time.sleep(timesleep)
+            # what else below doing ? is it correct ?
+            else:
+                print(f"[{datetime.now()}] Failed to reconnect after 5 attempts. Exiting...")
+                send_message("🚨 SI DILAN: Gagal reconnect CCTV setelah 5 percobaan. Aplikasi dimatikan.")
+                break
 
         # Apply the mask if available
         if mask is not None:
@@ -281,7 +301,10 @@ def main():
 
     cap.release()
     cv2.destroyAllWindows()
-    print("Exiting...")
+    # add timestamp to the message
+    now = datetime.now()
+    print(f"Monitoring stopped at {now}. Total violations: {totalCount}")
+    send_message(f"Monitoring stopped at {now}. Total violations: {totalCount}")
 
 if __name__ == "__main__":
     main()
