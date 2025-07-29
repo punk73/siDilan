@@ -144,7 +144,6 @@ def main():
     
     while True:
         success, img = cap.read()
-        print(f"Frame shape: {img.shape}")
         
         if not success:
             print(f"[{datetime.now()}] Frame read failed. Trying to reconnect...")
@@ -156,7 +155,7 @@ def main():
 
                 if cap.isOpened():
                     print(f"[{datetime.now()}] Reconnected successfully on attempt {attempt + 1}")
-                    break
+                    continue
                 else:
                     print(f"[{datetime.now()}] Reconnection attempt {attempt + 1} failed...")
                     time.sleep(timesleep)
@@ -165,7 +164,9 @@ def main():
                 print(f"[{datetime.now()}] Failed to reconnect after 5 attempts. Exiting...")
                 send_message("🚨 SI DILAN: Gagal reconnect CCTV setelah 5 percobaan. Aplikasi dimatikan.")
                 break
-
+        
+        print(f"Frame shape: {img.shape}")
+        
         # Apply the mask if available
         if mask is not None:
             resized_mask = cv2.resize(mask, (img.shape[1], img.shape[0]))
