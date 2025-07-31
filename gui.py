@@ -39,7 +39,7 @@ def open_config_gui():
 
     option_menu = customtkinter.CTkOptionMenu(master=frame, values=list(url_presets.keys()))
     option_menu.pack(pady=5)
-    option_menu.set("Klari - Arah Pintu Tol Karawang Timur")  # Default selection
+    option_menu.set("Terminal Klari HD")  # Default selection
 
     label = customtkinter.CTkLabel(master=frame, text='Atau Input Stream URL:')
     label.pack(pady=5, padx=5)
